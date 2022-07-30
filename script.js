@@ -5,26 +5,13 @@ const countriesContainer = document.querySelector('.countries');
 
 // -----------------------------------------------------------
 
+const renderCountry = (data, className = '') => {
+   const lang = Object.entries(data.languages)[0][1];
 
-const getCountryData = function(country){
-const request = new XMLHttpRequest();
-request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
-request.send()
-
-request.addEventListener('load', function(){    
-    const [data] = JSON.parse(this.responseText);
-     console.log(data);
-     
-
-     const lang = Object.entries(data.languages)[0][1];
-     console.log(lang)
-     
-     const curr = Object.entries(data.currencies)[0][1].name;
-     console.log(curr)
-
+   const curr = Object.entries(data.currencies)[0][1].name;
 
      const html = `
-     <article class="country">
+     <article class="country ${className}">
      <img src="${data.flags.svg}" alt="" class="country-img">
      <div class="country-data">
         <h3 class="country-name">${data.name.common}</h3>
@@ -38,10 +25,43 @@ request.addEventListener('load', function(){
 
      countriesContainer.insertAdjacentHTML('beforeend', html);
      countriesContainer.style.opacity = 1;
+}
+
+const getCountryAndNeighbour = function(country){
+
+   // ajax call for the country
+const request = new XMLHttpRequest();
+request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
+request.send()
+
+request.addEventListener('load', function(){    
+    const [data] = JSON.parse(this.responseText);
+    console.log(data)
+  
+   // render country  
+     renderCountry(data);
+
+
+   //ajax call neighbor country
+
+   const neighbour = data.borders[0];
+
+   if(!neighbour) return;
+
+   const request2 = new XMLHttpRequest();
+   request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
+   request2.send();
+   
+   request2.addEventListener('load' ,function(){
+      const [data2] = JSON.parse(this.responseText);
+      console.log(data2)
+
+
+   renderCountry(data2, 'neighbour')   
+   })
+
+
 })
 }
 
-getCountryData('bangladesh');
-getCountryData('india');
-getCountryData('nepal');
-getCountryData('usa')
+getCountryAndNeighbour('india');
