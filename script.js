@@ -83,19 +83,8 @@ const getCountryAndNeighbour = (country) => {
       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
     })
     .then(response => response.json())
-    .then(data => {
-      renderCountry(data[0],'neighbour')
-   
-      const neighbour2 = data[0].borders[1]
-      console.log(neighbour2)
-
-      if(!neighbour2) return;
-
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour2}`)
-   })
-   .then(response => response.json())
-   .then(data => renderCountry(data[0],'neighbour'))
+    .then(data => renderCountry(data[0],'neighbour'))
    
 }
 
-getCountryAndNeighbour('italy')
+getCountryAndNeighbour('bangladesh')
