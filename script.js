@@ -24,8 +24,14 @@ const renderCountry = (data, className = '') => {
      `
 
      countriesContainer.insertAdjacentHTML('beforeend', html);
-     countriesContainer.style.opacity = 1;
+   //   countriesContainer.style.opacity = 1;
 }
+
+
+const renderError = (msg => {
+   countriesContainer.insertAdjacentText('beforeend',msg);
+   // countriesContainer.style.opacity = 1;
+})
 
 // ======================================================================
 
@@ -84,7 +90,19 @@ const getCountryAndNeighbour = (country) => {
     })
     .then(response => response.json())
     .then(data => renderCountry(data[0],'neighbour'))
+    .catch(err => {
+      console.log(`${err}`);
+      renderError(`Something went wrong , ${err.message}`)
+    })
+    .finally(() => {
+       countriesContainer.style.opacity = 1;
+    })
    
-}
+};
 
-getCountryAndNeighbour('bangladesh')
+
+// ==================================================
+
+btn.addEventListener('click', () => {
+getCountryAndNeighbour('bangladesh');
+})
