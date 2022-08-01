@@ -24,13 +24,13 @@ const renderCountry = (data, className = '') => {
      `
 
      countriesContainer.insertAdjacentHTML('beforeend', html);
-   //   countriesContainer.style.opacity = 1;
+     countriesContainer.style.opacity = 1;
 }
 
 
 const renderError = (msg => {
    countriesContainer.insertAdjacentText('beforeend',msg);
-   // countriesContainer.style.opacity = 1;
+   countriesContainer.style.opacity = 1;
 })
 
 // ======================================================================
@@ -75,34 +75,100 @@ const renderError = (msg => {
 // getCountryAndNeighbour('india');
 
 
-const getCountryAndNeighbour = (country) => {
+// const getCountryAndNeighbour = (country) => {
  
-   fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then((response) => response.json())
-    .then((data) => {
-      renderCountry(data[0]);
+//    fetch(`https://restcountries.com/v3.1/name/${country}`)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       renderCountry(data[0]);
      
-      const neighbour = data[0].borders[0]
+//       const neighbour = data[0].borders[0]
       
-      if(!neighbour) return;
+//       if(!neighbour) return;
 
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
-    })
-    .then(response => response.json())
-    .then(data => renderCountry(data[0],'neighbour'))
-    .catch(err => {
-      console.log(`${err}`);
-      renderError(`Something went wrong , ${err.message}`)
-    })
-    .finally(() => {
-       countriesContainer.style.opacity = 1;
-    })
+//       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+//     })
+//     .then(response => response.json())
+//     .then(data => renderCountry(data[0],'neighbour'))
+//     .catch(err => {
+//       console.log(`${err}`);
+//       renderError(`Something went wrong , ${err.message}`)
+//     })
+//     .finally(() => {
+//        countriesContainer.style.opacity = 1;
+//     })
    
-};
+// };
 
 
-// ==================================================
+// // ==================================================
 
-btn.addEventListener('click', () => {
-getCountryAndNeighbour('bangladesh');
-})
+// btn.addEventListener('click', () => {
+// getCountryAndNeighbour('bangladesh');
+// })
+
+
+// ======================================================
+
+// const whereAmI = function(lat,lng){
+//    fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//    .then(res => {
+//       if(!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+//       return res.json();
+//    })
+//    .then(data => {
+//       console.log(data);
+//       console.log(`you are in ${data.city},${data.country}`)
+
+//       return fetch(`https://restcountries.com/v3.1/name/${data.country}`)
+//    })
+//    .then(res => {
+//       if(!res.ok) throw new Error(`Country is not found ${res.status}`);
+//       return res.json();
+//    })
+//    .then(data => renderCountry(data[0]))
+//    .catch(err => console.error(`${err.message}`))
+// }
+
+// whereAmI(52.508,13.381)
+// whereAmI(19.037,72.873)
+
+
+// ========================================
+
+const getPosition = function(){
+   return new Promise(function(resolve,reject){
+     navigator.geolocation.getCurrentPosition(resolve,reject)
+   })
+}                                         
+
+const whereIamNow = function(){
+     getPosition().then(pos => {
+      const {latitude: lat, longitude: lng} = pos.coords;
+
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+     })
+     .then(res => {
+      if (!res.ok) throw new Error(`problem with geocoding ${res.status}`);
+      return res.json();
+     })
+     .then(data => {
+      console.log(data);
+      console.log(`you are in ${data.city}, ${data.country}`)
+
+      return fetch(`https://restcountries.com/v3.1/name/${data.country}`);
+     })
+     .then(res => {
+      if(!res.ok) throw new Error(`Country is not found ${res.status}`);
+      return res.json();
+     })
+     .then(data => renderCountry(data[0]))
+     .catch(err => console.error(`${err.message}`))
+}
+
+
+btn.addEventListener('click', whereIamNow)
+
+
+
+
