@@ -136,38 +136,120 @@ const renderError = (msg => {
 
 // ========================================
 
-const getPosition = function(){
-   return new Promise(function(resolve,reject){
-     navigator.geolocation.getCurrentPosition(resolve,reject)
+// const getPosition = function(){
+//    return new Promise(function(resolve,reject){
+//      navigator.geolocation.getCurrentPosition(resolve,reject)
+//    })
+// }                                         
+
+// const whereIamNow = function(){
+//      getPosition().then(pos => {
+//       const {latitude: lat, longitude: lng} = pos.coords;
+
+//       return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//      })
+//      .then(res => {
+//       if (!res.ok) throw new Error(`problem with geocoding ${res.status}`);
+//       return res.json();
+//      })
+//      .then(data => {
+//       console.log(data);
+//       console.log(`you are in ${data.city}, ${data.country}`)
+
+//       return fetch(`https://restcountries.com/v3.1/name/${data.country}`);
+//      })
+//      .then(res => {
+//       if(!res.ok) throw new Error(`Country is not found ${res.status}`);
+//       return res.json();
+//      })
+//      .then(data => renderCountry(data[0]))
+//      .catch(err => console.error(`${err.message}`))
+// }
+
+
+// btn.addEventListener('click', whereIamNow)
+
+const wait = function(seconds){
+   return new Promise(function(resolve){
+      setTimeout(resolve,seconds * 1000);
    })
-}                                         
-
-const whereIamNow = function(){
-     getPosition().then(pos => {
-      const {latitude: lat, longitude: lng} = pos.coords;
-
-      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
-     })
-     .then(res => {
-      if (!res.ok) throw new Error(`problem with geocoding ${res.status}`);
-      return res.json();
-     })
-     .then(data => {
-      console.log(data);
-      console.log(`you are in ${data.city}, ${data.country}`)
-
-      return fetch(`https://restcountries.com/v3.1/name/${data.country}`);
-     })
-     .then(res => {
-      if(!res.ok) throw new Error(`Country is not found ${res.status}`);
-      return res.json();
-     })
-     .then(data => renderCountry(data[0]))
-     .catch(err => console.error(`${err.message}`))
 }
 
 
-btn.addEventListener('click', whereIamNow)
+const imageContainer = document.querySelector('.images');
+
+
+const createImage = function(imgPath){
+   return new Promise(function(resolve,reject){
+      const img = document.createElement('img');
+      img.src = imgPath;
+
+      img.addEventListener('load',function(){
+         imageContainer.append(img);
+         resolve(img)
+      })
+      img.addEventListener('error',function(){
+         reject(new Error('images not found'))
+      })
+   })
+}
+
+let currentImage
+
+createImage('./img/img-1.jpg').then(img => {
+   console.log('image 1 loaded')
+   currentImage = img
+   return wait(2)
+})
+.then(()=> {
+currentImage.style.display = 'none';
+return createImage('./img/img-2.jpg');
+})
+.then(img => {
+   console.log('image 2 loaded')
+   currentImage = img;
+   return wait(2)
+})
+.then(()=> {
+currentImage.style.display = 'none';
+return createImage('./img/img-3.jpg');
+})
+.then(img => {
+ console.log('image 3 loaded')
+ currentImage = img;
+ return wait(2);
+})
+.then(() => {
+   currentImage.style.display = 'none';
+})
+.catch(err => console.error(err));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
