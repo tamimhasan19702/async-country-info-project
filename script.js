@@ -136,11 +136,11 @@ const renderError = (msg => {
 
 // ========================================
 
-// const getPosition = function(){
-//    return new Promise(function(resolve,reject){
-//      navigator.geolocation.getCurrentPosition(resolve,reject)
-//    })
-// }                                         
+const getPosition = function(){
+   return new Promise(function(resolve,reject){
+     navigator.geolocation.getCurrentPosition(resolve,reject)
+   })
+}                                         
 
 // const whereIamNow = function(){
 //      getPosition().then(pos => {
@@ -169,66 +169,81 @@ const renderError = (msg => {
 
 // btn.addEventListener('click', whereIamNow)
 
-const wait = function(seconds){
-   return new Promise(function(resolve){
-      setTimeout(resolve,seconds * 1000);
-   })
-}
+// const wait = function(seconds){
+//    return new Promise(function(resolve){
+//       setTimeout(resolve,seconds * 1000);
+//    })
+// }
 
 
-const imageContainer = document.querySelector('.images');
+// const imageContainer = document.querySelector('.images');
 
 
-const createImage = function(imgPath){
-   return new Promise(function(resolve,reject){
-      const img = document.createElement('img');
-      img.src = imgPath;
+// const createImage = function(imgPath){
+//    return new Promise(function(resolve,reject){
+//       const img = document.createElement('img');
+//       img.src = imgPath;
 
-      img.addEventListener('load',function(){
-         imageContainer.append(img);
-         resolve(img)
-      })
-      img.addEventListener('error',function(){
-         reject(new Error('images not found'))
-      })
-   })
-}
+//       img.addEventListener('load',function(){
+//          imageContainer.append(img);
+//          resolve(img)
+//       })
+//       img.addEventListener('error',function(){
+//          reject(new Error('images not found'))
+//       })
+//    })
+// }
 
-let currentImage
+// let currentImage
 
-createImage('./img/img-1.jpg').then(img => {
-   console.log('image 1 loaded')
-   currentImage = img
-   return wait(2)
-})
-.then(()=> {
-currentImage.style.display = 'none';
-return createImage('./img/img-2.jpg');
-})
-.then(img => {
-   console.log('image 2 loaded')
-   currentImage = img;
-   return wait(2)
-})
-.then(()=> {
-currentImage.style.display = 'none';
-return createImage('./img/img-3.jpg');
-})
-.then(img => {
- console.log('image 3 loaded')
- currentImage = img;
- return wait(2);
-})
-.then(() => {
-   currentImage.style.display = 'none';
-})
-.catch(err => console.error(err));
-
-
+// createImage('./img/img-1.jpg').then(img => {
+//    console.log('image 1 loaded')
+//    currentImage = img
+//    return wait(2)
+// })
+// .then(()=> {
+// currentImage.style.display = 'none';
+// return createImage('./img/img-2.jpg');
+// })
+// .then(img => {
+//    console.log('image 2 loaded')
+//    currentImage = img;
+//    return wait(2)
+// })
+// .then(()=> {
+// currentImage.style.display = 'none';
+// return createImage('./img/img-3.jpg');
+// })
+// .then(img => {
+//  console.log('image 3 loaded')
+//  currentImage = img;
+//  return wait(2);
+// })
+// .then(() => {
+//    currentImage.style.display = 'none';
+// })
+// .catch(err => console.error(err));
 
 
+//========================================================
 
 
+
+
+const whereAmI = async function(){
+   const pos = await getPosition();
+   const {latitude: lat , longitude:lng} = pos.coords;
+
+   const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+   const dataGeo = await resGeo.json();
+   console.log(dataGeo);
+
+   const res = await fetch(`https://restcountries.com/v3.1/name/${dataGeo.country}`);
+   const data = await res.json();
+   console.log(data);
+   renderCountry(data[0])
+};
+whereAmI();
 
 
 
