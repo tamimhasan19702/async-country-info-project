@@ -1,37 +1,37 @@
 'use strict';
 
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
+// const btn = document.querySelector('.btn-country');
+// const countriesContainer = document.querySelector('.countries');
 
-// -----------------------------------------------------------
+// // -----------------------------------------------------------
 
-const renderCountry = (data, className = '') => {
-   const lang = Object.entries(data.languages)[0][1];
+// const renderCountry = (data, className = '') => {
+//    const lang = Object.entries(data.languages)[0][1];
 
-   const curr = Object.entries(data.currencies)[0][1].name;
+//    const curr = Object.entries(data.currencies)[0][1].name;
 
-     const html = `
-     <article class="country ${className}">
-     <img src="${data.flags.svg}" alt="" class="country-img">
-     <div class="country-data">
-        <h3 class="country-name">${data.name.common}</h3>
-        <h4 class="country-region">${data.region}</h4>
-        <p class="country-row"> <span>👫</span>${(+data.population / 1000000).toFixed(3)}M people</p>
-        <p class="country-row"> <span>🗣️</span>${lang}</p>
-        <p class="country-row"> <span>💰</span>${curr}</p>
-     </div>
-    </article>
-     `
+//      const html = `
+//      <article class="country ${className}">
+//      <img src="${data.flags.svg}" alt="" class="country-img">
+//      <div class="country-data">
+//         <h3 class="country-name">${data.name.common}</h3>
+//         <h4 class="country-region">${data.region}</h4>
+//         <p class="country-row"> <span>👫</span>${(+data.population / 1000000).toFixed(3)}M people</p>
+//         <p class="country-row"> <span>🗣️</span>${lang}</p>
+//         <p class="country-row"> <span>💰</span>${curr}</p>
+//      </div>
+//     </article>
+//      `
 
-     countriesContainer.insertAdjacentHTML('beforeend', html);
-     countriesContainer.style.opacity = 1;
-}
+//      countriesContainer.insertAdjacentHTML('beforeend', html);
+//      countriesContainer.style.opacity = 1;
+// }
 
 
-const renderError = (msg => {
-   countriesContainer.insertAdjacentText('beforeend',msg);
-   countriesContainer.style.opacity = 1;
-})
+// const renderError = (msg => {
+//    countriesContainer.insertAdjacentText('beforeend',msg);
+//    countriesContainer.style.opacity = 1;
+// })
 
 // ======================================================================
 
@@ -136,11 +136,11 @@ const renderError = (msg => {
 
 // ========================================
 
-const getPosition = function(){
-   return new Promise(function(resolve,reject){
-     navigator.geolocation.getCurrentPosition(resolve,reject)
-   })
-}                                         
+// const getPosition = function(){
+//    return new Promise(function(resolve,reject){
+//      navigator.geolocation.getCurrentPosition(resolve,reject)
+//    })
+// }                                         
 
 // const whereIamNow = function(){
 //      getPosition().then(pos => {
@@ -230,30 +230,97 @@ const getPosition = function(){
 
 
 
-const whereAmI = async function(){
-   const pos = await getPosition();
-   const {latitude: lat , longitude:lng} = pos.coords;
+// const whereAmI = async function(){
+//    const pos = await getPosition();
+//    const {latitude: lat , longitude:lng} = pos.coords;
 
-   const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
-   const dataGeo = await resGeo.json();
-   console.log(dataGeo);
+//    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//    const dataGeo = await resGeo.json();
+//    console.log(dataGeo);
 
-   const res = await fetch(`https://restcountries.com/v3.1/name/${dataGeo.country}`);
-   const data = await res.json();
-   console.log(data);
-   renderCountry(data[0])
+//    const res = await fetch(`https://restcountries.com/v3.1/name/${dataGeo.country}`);
+//    const data = await res.json();
+//    console.log(data);
+//    renderCountry(data[0])
+// };
+// whereAmI();
+
+
+// coding challange -2
+
+const wait = function(seconds){
+   return new Promise(function(resolve){
+      setTimeout(resolve,seconds * 1000);
+   });
 };
-whereAmI();
+
+const imageContainer = document.querySelector('.images');
+
+const createImage = function(imgPath){
+   return new Promise(function(resolve,reject){
+      const img = document.createElement('img');
+      img.src = imgPath;
+
+      img.addEventListener('load',function(){
+         imageContainer.append(img);
+         resolve(img);
+      });
+
+      img.addEventListener('error',function(){
+         reject(new Error('Image is not found'));
+      });
+   });
+};
+
+let currentImage;
+
+createImage('./img/img-1.jpg')
+.then(img => {
+   currentImage = img;
+   console.log('Image 1 loaded');
+   return wait(2);
+})
+.then(() => {
+   currentImage.style.display = 'none';
+   return createImage('./img/img-2.jpg')
+})
+.then(img => {
+   currentImage = img;
+   console.log('image 2 loaded');
+   return wait(2);
+})
+.then(() => {
+   currentImage.style.display = 'none';
+})
+.catch(err => console.log(err));
 
 
+// with async await function
 
+const loadNpause = async function(){
+   try{
 
+   let img = await createImage('./img/img-1.jpg');
+   console.log('image 1 loaded');
+   await wait(2);
+   img.style.display = 'none';
 
+   img = await createImage('./img/img-2.jpg');
+   console.log('image 2 loaded');
+   await wait(2);
+   img.style.display = 'none';
 
+   img = await createImage('./img/img-3.jpg');
+   console.log('image 3 loaded');
+   await wait(2);
+   img.style.display = 'none';
 
+   
 
-
-
+   }catch(err){
+      console.error(err);
+   };
+}
 
 
 
